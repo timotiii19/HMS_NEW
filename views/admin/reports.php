@@ -5,11 +5,17 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
+include('../../includes/admin_header.php');
 include('../../includes/admin_sidebar.php');
 include('../../config/db.php');
 
-// Billing Summary Report
-$billing = $conn->query("SELECT * FROM patientbilling");
+// Billing Summary Report with proper JOIN and column selection
+$billing = $conn->query("
+    SELECT p.PatientID, p.Name AS PatientName, p.DateOfBirth, p.Contact, p.Sex, p.Address, 
+           b.DoctorFee, b.MedicineCost, b.TotalAmount
+    FROM patientbilling b 
+    JOIN patients p ON b.PatientID = p.PatientID
+");
 
 // Doctor List Report
 $reports = $conn->query("
@@ -43,25 +49,35 @@ $nurses = $conn->query("SELECT * FROM nurse");
 
     <table border="1">
         <tr>
-            <th>ID</th>
+            <th>Patient ID</th>
             <th>Patient Name</th>
+            <th>Date of Birth</th>
+            <th>Contact</th>
+            <th>Sex</th>
+            <th>Address</th>
             <th>Doctor Fee</th>
             <th>Medicine Cost</th>
             <th>Total Amount</th>
         </tr>
-        <?php if ($billing->num_rows > 0) {
-            while ($row = $billing->fetch_assoc()) { ?>
-                <tr>
-                    <td><?= $row['id'] ?></td>
-                    <td><?= htmlspecialchars($row['patient_name']) ?></td>
-                    <td><?= htmlspecialchars($row['doctor_fee']) ?></td>
-                    <td><?= htmlspecialchars($row['medicine_cost']) ?></td>
-                    <td><?= htmlspecialchars($row['total_amount']) ?></td>
-                </tr>
-            <?php }
+        <?php 
+        if ($billing->num_rows > 0) {
+            while ($row = $billing->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($row['PatientID']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['PatientName']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['DateOfBirth']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['Contact']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['Sex']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['Address']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['DoctorFee']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['MedicineCost']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['TotalAmount']) . "</td>";
+                echo "</tr>";
+            }
         } else {
-            echo "<tr><td colspan='5'>No billing data available.</td></tr>";
-        } ?>
+            echo "<tr><td colspan='9'>No billing data available.</td></tr>";
+        }
+        ?>
     </table>
 
     <!-- Doctor List -->
@@ -73,18 +89,20 @@ $nurses = $conn->query("SELECT * FROM nurse");
             <th>Specialty</th>
             <th>Department</th>
         </tr>
-        <?php if ($reports->num_rows > 0) {
-            while ($row = $reports->fetch_assoc()) { ?>
-                <tr>
-                    <td><?= $row['DoctorID'] ?></td>
-                    <td><?= htmlspecialchars($row['DoctorName']) ?></td>
-                    <td><?= htmlspecialchars($row['DoctorType']) ?></td>
-                    <td><?= $row['DepartmentName'] ?? 'Not Assigned' ?></td>
-                </tr>
-            <?php }
+        <?php 
+        if ($reports->num_rows > 0) {
+            while ($row = $reports->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($row['DoctorID']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['DoctorName']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['DoctorType']) . "</td>";
+                echo "<td>" . ($row['DepartmentName'] ?? 'Not Assigned') . "</td>";
+                echo "</tr>";
+            }
         } else {
             echo "<tr><td colspan='4'>No doctors available.</td></tr>";
-        } ?>
+        }
+        ?>
     </table>
 
     <!-- Nurses List -->
@@ -95,17 +113,19 @@ $nurses = $conn->query("SELECT * FROM nurse");
             <th>Nurse Name</th>
             <th>Email</th>
         </tr>
-        <?php if ($nurses->num_rows > 0) {
-            while ($row = $nurses->fetch_assoc()) { ?>
-                <tr>
-                    <td><?= $row['NurseID'] ?></td>
-                    <td><?= htmlspecialchars($row['Name']) ?></td>
-                    <td><?= htmlspecialchars($row['Email']) ?></td>
-                </tr>
-            <?php }
+        <?php 
+        if ($nurses->num_rows > 0) {
+            while ($row = $nurses->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($row['NurseID']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['Name']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['Email']) . "</td>";
+                echo "</tr>";
+            }
         } else {
             echo "<tr><td colspan='3'>No nurses available.</td></tr>";
-        } ?>
+        }
+        ?>
     </table>
 
 </div>

@@ -4,10 +4,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'nurse') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../includes/admin_header.php');
 include('../../includes/nurse_sidebar.php');
+include('../../config/db.php');
 
-// Database connection
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
 
 // Get outpatient data (view-only)
 $outpatients = $conn->query("SELECT * FROM outpatients");

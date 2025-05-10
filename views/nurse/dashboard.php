@@ -4,13 +4,15 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'nurse') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../includes/admin_header.php');
 include('../../includes/nurse_sidebar.php');
+include('../../config/db.php');
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ANurse Dashboard</title>
+    <title>Nurse Dashboard</title>
     <link rel="stylesheet" type="text/css" href="../../css/style.css">
 </head>
 <body>

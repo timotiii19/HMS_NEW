@@ -7,7 +7,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'nurse') {
     exit();
 }
 
-// Include headers and sidebar
 include('../../includes/admin_header.php');
 include('../../includes/nurse_sidebar.php');
 include('../../config/db.php');
@@ -15,20 +14,8 @@ include('../../config/db.php');
 // Get the nurse ID from the session
 $nurseID = $_SESSION['NurseID'];  // This should hold the logged-in nurse's ID
 
-// Fetch patients assigned to the current nurse (both inpatient and outpatient)
-$query = "SELECT * FROM patients 
-          LEFT JOIN outpatients ON patients.PatientID = outpatients.PatientID
-          LEFT JOIN inpatients ON patients.PatientID = inpatients.PatientID
-          WHERE patients.AssignedNurseID = ? OR patients.AssignedNurseID IS NULL";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $nurseID);  // Bind nurse ID as an integer
-$stmt->execute();
-$result = $stmt->get_result();
-$patients = $result->fetch_all(MYSQLI_ASSOC); // Get all results as an associative array
-
 // Fetch only patients assigned to the current nurse
-$query_my_patients = "SELECT * FROM patients 
-                      WHERE AssignedNurseID = ?";
+$query_my_patients = "SELECT * FROM patients WHERE AssignedNurseID = ?";
 $stmt_my_patients = $conn->prepare($query_my_patients);
 $stmt_my_patients->bind_param("i", $nurseID);  // Bind nurse ID as an integer
 $stmt_my_patients->execute();
@@ -42,7 +29,7 @@ if (isset($_POST['update_patient'])) {
     $stmt = $conn->prepare("UPDATE patients SET VitalSigns = ? WHERE PatientID = ?");
     $stmt->bind_param("si", $vital_signs, $patient_id);
     $stmt->execute();
-    header("Location: patient.php"); // Refresh the page
+    header("Location: my_patients.php"); // Refresh the page
     exit();
 }
 ?>
@@ -52,64 +39,58 @@ if (isset($_POST['update_patient'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Management</title>
+    <title>My Patients</title>
     <link rel="stylesheet" type="text/css" href="../../css/style.css">
     <style>
         .content {
             padding: 20px;
         }
-
         .button {
             margin-right: 15px;
             padding: 10px 20px;
             text-decoration: none;
-            background-color: #007bff; /* Blue */
+            background-color: #007bff;
             color: white;
             border-radius: 5px;
             font-size: 14px;
             margin-bottom: 20px;
         }
-
         .button:hover {
-            background-color: #0056b3; /* Darker Blue */
+            background-color: #0056b3;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
             padding: 10px;
             text-align: center;
             border: 1px solid #ddd;
         }
-
         th {
-            background-color: #f8f9fa; /* Light Gray */
+            background-color: #f8f9fa;
         }
-
         form input, form button {
             padding: 5px 10px;
             margin-top: 5px;
         }
-
+    
     </style>
 </head>
 <body>
 
-<div class="content">
+  <div class="content">
     <h2>Patient Management</h2>
-
+    
     <!-- Buttons for All Patients and My Patients -->
     <div>
         <a href="patient.php" class="button">All Patients</a>
         <a href="my_patients.php" class="button">My Patients</a>
     </div>
 
-    <!-- Patient List for the Nurse -->
-    <h3>All Patients (Inpatients and Outpatients)</h3>
+    <!-- Patient List for the Current Nurse -->
+    <h3>My Patients</h3>
     <table>
         <tr>
             <th>Patient ID</th>
@@ -118,7 +99,7 @@ if (isset($_POST['update_patient'])) {
             <th>Patient Type</th>
             <th>Action</th>
         </tr>
-        <?php foreach ($patients as $row) { ?>
+        <?php foreach ($my_patients as $row) { ?>
         <tr>
             <td><?= $row['PatientID'] ?></td>
             <td><?= $row['Name'] ?></td>

@@ -4,10 +4,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'nurse') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../includes/admin_header.php');
 include('../../includes/nurse_sidebar.php');
+include('../../config/db.php');
 
-// Connect to database
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
 
 // Insert emergency entry
 if (isset($_POST['log_emergency'])) {

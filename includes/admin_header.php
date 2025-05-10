@@ -108,8 +108,6 @@
         <div class="dropdown">
             <button class="dropbtn">Create New <i class="fas fa-chevron-down"></i></button>
             <div class="dropdown-content">
-                <a href="#">New Report</a>
-                <a href="#">New User</a>
             </div>
         </div>
     </div>

@@ -5,7 +5,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
-include('../../config/db.php'); // Safe to include before output
+include('../../includes/admin_header.php');
+include('../../includes/admin_sidebar.php');
+include('../../config/db.php');
 
 // Add department
 if (isset($_POST['add_department'])) {

@@ -5,7 +5,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
-include('../../includes/header.php');
+include('../../includes/admin_header.php');
 include('../../includes/admin_sidebar.php');
 include('../../config/db.php');
 
@@ -27,5 +27,4 @@ include('../../config/db.php');
     
 </body>
 </html>
-
 
