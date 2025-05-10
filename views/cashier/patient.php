@@ -4,9 +4,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'cashier') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../includes/cashier_header.php');
 include('../../includes/cashier_sidebar.php');
+include('../../config/db.php');
 
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
 
 $patients = $conn->query("SELECT * FROM patients");
 ?>

@@ -1,10 +1,9 @@
 <?php
 session_start();
 
+include('../../includes/admin_header.php');
 include('../../includes/doctor_sidebar.php');
-
-// Connect database
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
+include('../../config/db.php');
 
 // Handle Add Appointment
 if (isset($_POST['add_appointment'])) {
@@ -53,6 +52,100 @@ $patients = $conn->query("SELECT PatientID, Name FROM patients");
 <head>
     <title>Appointments</title>
     <link rel="stylesheet" type="text/css" href="../../css/style.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+        }
+
+        .content {
+            margin-left: 220px; /* sidebar width */
+            padding: 20px;
+        }
+
+        h2, h3 {
+            color: #9c335a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #9c335a;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-group button {
+            background-color: #9c335a;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #7a0154;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 50%;
+        }
+
+        .modal-content button {
+            background-color: #28a745;
+            border-radius: 5px;
+        }
+
+        .modal-content button.cancel {
+            background-color: #dc3545;
+        }
+    </style>
 </head>
 <body>
 
@@ -62,20 +155,30 @@ $patients = $conn->query("SELECT PatientID, Name FROM patients");
     <!-- Add Appointment Form -->
     <h3>Add Appointment</h3>
     <form method="POST">
-        <select name="patient_id" required>
-            <option value="">Select Patient</option>
-            <?php while ($p = $patients->fetch_assoc()) { ?>
-                <option value="<?php echo $p['PatientID']; ?>"><?php echo $p['Name']; ?></option>
-            <?php } ?>
-        </select>
-        <input type="date" name="appointment_date" required>
-        <input type="time" name="appointment_time" required>
-        <textarea name="reason" placeholder="Reason for appointment" required></textarea>
-        <button type="submit" name="add_appointment">Add Appointment</button>
+        <div class="form-group">
+            <select name="patient_id" required>
+                <option value="">Select Patient</option>
+                <?php while ($p = $patients->fetch_assoc()) { ?>
+                    <option value="<?php echo $p['PatientID']; ?>"><?php echo $p['Name']; ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="date" name="appointment_date" required>
+        </div>
+        <div class="form-group">
+            <input type="time" name="appointment_time" required>
+        </div>
+        <div class="form-group">
+            <textarea name="reason" placeholder="Reason for appointment" required></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" name="add_appointment">Add Appointment</button>
+        </div>
     </form>
 
     <h3>Existing Appointments</h3>
-    <table border="1">
+    <table>
         <tr>
             <th>Patient</th>
             <th>Date</th>
@@ -98,22 +201,34 @@ $patients = $conn->query("SELECT PatientID, Name FROM patients");
     </table>
 
     <!-- Edit Appointment Modal -->
-    <div id="editModal" style="display:none;">
-        <h3>Edit Appointment</h3>
-        <form method="POST">
-            <input type="hidden" name="appointment_id" id="appointment_id">
-            <select name="patient_id" id="edit_patient_id" required>
-                <option value="">Select Patient</option>
-                <?php while ($p = $patients->fetch_assoc()) { ?>
-                    <option value="<?php echo $p['PatientID']; ?>"><?php echo $p['Name']; ?></option>
-                <?php } ?>
-            </select>
-            <input type="date" name="appointment_date" id="edit_appointment_date" required>
-            <input type="time" name="appointment_time" id="edit_appointment_time" required>
-            <textarea name="reason" id="edit_reason" required></textarea>
-            <button type="submit" name="edit_appointment">Save Changes</button>
-            <button type="button" onclick="closeEditForm()">Cancel</button>
-        </form>
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Appointment</h3>
+            <form method="POST">
+                <input type="hidden" name="appointment_id" id="appointment_id">
+                <div class="form-group">
+                    <select name="patient_id" id="edit_patient_id" required>
+                        <option value="">Select Patient</option>
+                        <?php while ($p = $patients->fetch_assoc()) { ?>
+                            <option value="<?php echo $p['PatientID']; ?>"><?php echo $p['Name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="date" name="appointment_date" id="edit_appointment_date" required>
+                </div>
+                <div class="form-group">
+                    <input type="time" name="appointment_time" id="edit_appointment_time" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="reason" id="edit_reason" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" name="edit_appointment">Save Changes</button>
+                    <button type="button" class="cancel" onclick="closeEditForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

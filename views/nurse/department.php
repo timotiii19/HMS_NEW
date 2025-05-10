@@ -64,13 +64,7 @@ $departments = $conn->query("SELECT * FROM department");
 
 <div class="content">
     <h2>Departments (View-Only)</h2>
-
-    <!-- Buttons for Navigation -->
-    <div>
-        <a href="patient.php" class="button">All Patients</a>
-        <a href="my_patients.php" class="button">My Patients</a>
-    </div>
-
+    
     <!-- Department Table (View-Only for Nurses) -->
     <h3>Department List</h3>
     <table class="table table-striped">

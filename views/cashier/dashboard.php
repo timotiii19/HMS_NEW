@@ -4,8 +4,13 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'cashier') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../config/db.php');
+include('../../includes/cashier_header.php');
 include('../../includes/cashier_sidebar.php');
+
+$cashier_name = $_SESSION['username'];
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -16,7 +21,7 @@ include('../../includes/cashier_sidebar.php');
 <body>
 
 <div class="content">
-    <h2>Welcome, Cashier!</h2>
+<h2>Welcome, <?php echo htmlspecialchars($cashier_name); ?>!</h2>
     <p>This is your cashier dashboard. Use the sidebar to navigate.</p>
 </div>
     

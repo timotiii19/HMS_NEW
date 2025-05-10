@@ -105,10 +105,7 @@ $patients = getPatients($conn);
                         <td><?= htmlspecialchars($patient['Contact']) ?></td>
                         <td><?= htmlspecialchars($patient['Sex']) ?></td>
                         <td><?= htmlspecialchars($patient['Address']) ?></td>
-                        <td>
-                            <a href="inpatients/create.php?patient_id=<?= $patient['PatientID'] ?>" class="btn btn-sm btn-primary">Inpatient</a>
-                            <a href="outpatients/create.php?patient_id=<?= $patient['PatientID'] ?>" class="btn btn-sm btn-success">Outpatient</a>
-                        </td>
+                        <td><?= htmlspecialchars($patient['PatientType']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>

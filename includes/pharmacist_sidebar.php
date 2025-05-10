@@ -1,5 +1,5 @@
 <div class="sidebar">
-    <h2>Doctor Dashboard</h2>
+    <h2>Pharmacist Dashboard</h2>
     <ul>
         <li><a href="/HMS-main/views/pharmacist/dashboard.php">Dashboard</a></li>
         <li><a href="/HMS-main/views/pharmacist/doctor.php">Doctor</a></li>

@@ -4,9 +4,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'cashier') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../includes/cashier_header.php');
 include('../../includes/cashier_sidebar.php');
+include('../../config/db.php');
 
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
 
 $doctors = $conn->query("SELECT DoctorID, DoctorName, DoctorFee FROM doctor");
 ?>
@@ -28,7 +29,7 @@ $doctors = $conn->query("SELECT DoctorID, DoctorName, DoctorFee FROM doctor");
             <tr>
                 <td><?= $row['DoctorID'] ?></td>
                 <td><?= $row['DoctorName'] ?></td>
-                <td>₹<?= $row['DoctorFee'] ?></td>
+                <td>₱<?= $row['DoctorFee'] ?></td>
             </tr>
         <?php } ?>
     </table>

@@ -8,86 +8,104 @@ include('../../includes/admin_header.php');
 include('../../includes/nurse_sidebar.php');
 include('../../config/db.php');
 
-// Fetch doctor schedules or other content for the page
+// Update schedule if form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_schedule'])) {
+    $id = $_POST['DoctorScheduleID'];
+    $doctor_id = $_POST['DoctorID'];
+    $location_id = $_POST['LocationID'];
+    $date = $_POST['ScheduleDate'];
+    $start = $_POST['StartTime'];
+    $end = $_POST['EndTime'];
+    $status = $_POST['Status'];
+
+    $stmt = $conn->prepare("UPDATE doctorschedule SET DoctorID=?, LocationID=?, ScheduleDate=?, StartTime=?, EndTime=?, Status=? WHERE DoctorScheduleID=?");
+    $stmt->bind_param("iissssi", $doctor_id, $location_id, $date, $start, $end, $status, $id);
+    $stmt->execute();
+    header("Location: doctor_schedule.php");
+    exit();
+}
+
+// Fetch doctor schedules
 $query = "SELECT * FROM doctorschedule";
 $result = $conn->query($query);
-$schedules = $result->fetch_all(MYSQLI_ASSOC); // Fetch the result as an associative array
+$schedules = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Schedules - Nurse Dashboard</title>
     <link rel="stylesheet" type="text/css" href="../../css/style.css">
     <style>
-        .content {
-            padding: 20px;
-        }
-
-        .button {
-            margin-right: 15px;
-            padding: 10px 20px;
-            text-decoration: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
+        .content { padding: 20px; }
+        .btn {
+            padding: 8px 15px;
             font-size: 14px;
-            margin-bottom: 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
         }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
+        .btn-warning { background-color: #ffc107; color: white; }
+        .btn-warning:hover { background-color: #e0a800; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
             padding: 10px;
             text-align: center;
             border: 1px solid #ddd;
         }
-
         th {
             background-color: #f8f9fa;
         }
-
         .table-striped tbody tr:nth-of-type(odd) {
             background-color: #f2f2f2;
         }
 
-        .form-control {
-            padding: 5px 10px;
-            margin-top: 5px;
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
         }
-
-        .btn {
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 5px;
+        .modal-dialog {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
         }
-
-        .btn-warning {
-            background-color: #ffc107;
-            color: white;
+        .modal-header, .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .btn-warning:hover {
-            background-color: #e0a800;
+        .modal-body label {
+            display: block;
+            margin-top: 10px;
         }
-
-        .btn-success {
-            background-color: #28a745;
-            color: white;
+        .modal-body input, .modal-body select {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
         }
-
-        .btn-success:hover {
-            background-color: #218838;
+        .close {
+            background: none;
+            border: none;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -95,14 +113,6 @@ $schedules = $result->fetch_all(MYSQLI_ASSOC); // Fetch the result as an associa
     <div class="content">
         <h2>Doctor Schedules</h2>
 
-        <!-- Buttons for Navigation -->
-        <div>
-            <a href="patient.php" class="button">All Patients</a>
-            <a href="my_patients.php" class="button">My Patients</a>
-        </div>
-
-        <!-- Doctor Schedule Table -->
-        <h3>Doctor Schedule List</h3>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -127,34 +137,68 @@ $schedules = $result->fetch_all(MYSQLI_ASSOC); // Fetch the result as an associa
                         <td><?= $s['EndTime'] ?></td>
                         <td><?= $s['Status'] ?></td>
                         <td>
-                            <a href="?edit=<?= $s['DoctorScheduleID'] ?>" class="btn btn-warning">Edit</a>
+                            <button class="btn btn-warning" onclick='openEditModal(<?= json_encode($s, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)'>Edit</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
 
-        <!-- Edit Form (if editing) -->
-        <?php if (isset($editSchedule)): ?>
-            <hr>
-            <h4>Edit Schedule</h4>
-            <form method="POST" action="/doctorschedule/update/<?= $editSchedule['DoctorScheduleID'] ?>">
-                <div class="row g-2">
-                    <div class="col"><input type="number" name="DoctorID" class="form-control" value="<?= $editSchedule['DoctorID'] ?>" required></div>
-                    <div class="col"><input type="number" name="LocationID" class="form-control" value="<?= $editSchedule['LocationID'] ?>" required></div>
-                    <div class="col"><input type="date" name="ScheduleDate" class="form-control" value="<?= $editSchedule['ScheduleDate'] ?>" required></div>
-                    <div class="col"><input type="time" name="StartTime" class="form-control" value="<?= $editSchedule['StartTime'] ?>" required></div>
-                    <div class="col"><input type="time" name="EndTime" class="form-control" value="<?= $editSchedule['EndTime'] ?>" required></div>
-                    <div class="col">
-                        <select name="Status" class="form-control" required>
-                            <option value="Regular" <?= $editSchedule['Status'] == 'Regular' ? 'selected' : '' ?>>Regular</option>
-                            <option value="Resident" <?= $editSchedule['Status'] == 'Resident' ? 'selected' : '' ?>>Resident</option>
-                        </select>
-                    </div>
-                    <div class="col"><button class="btn btn-success" type="submit">Update</button></div>
+    <!-- Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-dialog">
+            <form method="POST" action="">
+                <div class="modal-header">
+                    <h5>Edit Doctor Schedule</h5>
+                    <button type="button" onclick="closeModal()" class="close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="DoctorScheduleID" id="edit-id">
+                    <label>Doctor ID</label>
+                    <input type="number" name="DoctorID" id="edit-doctor-id" required>
+
+                    <label>Location ID</label>
+                    <input type="number" name="LocationID" id="edit-location-id" required>
+
+                    <label>Date</label>
+                    <input type="date" name="ScheduleDate" id="edit-date" required>
+
+                    <label>Start Time</label>
+                    <input type="time" name="StartTime" id="edit-start" required>
+
+                    <label>End Time</label>
+                    <input type="time" name="EndTime" id="edit-end" required>
+
+                    <label>Status</label>
+                    <select name="Status" id="edit-status" required>
+                        <option value="Regular">Regular</option>
+                        <option value="Resident">Resident</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="update_schedule" class="btn btn-success">Update</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
                 </div>
             </form>
-        <?php endif; ?>
+        </div>
     </div>
+
+    <script>
+        function openEditModal(schedule) {
+            document.getElementById('edit-id').value = schedule.DoctorScheduleID;
+            document.getElementById('edit-doctor-id').value = schedule.DoctorID;
+            document.getElementById('edit-location-id').value = schedule.LocationID;
+            document.getElementById('edit-date').value = schedule.ScheduleDate;
+            document.getElementById('edit-start').value = schedule.StartTime;
+            document.getElementById('edit-end').value = schedule.EndTime;
+            document.getElementById('edit-status').value = schedule.Status;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

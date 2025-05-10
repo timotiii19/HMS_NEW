@@ -4,6 +4,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'doctor') {
     header("Location: ../../auth/login.php");
     exit();
 }
+include('../../includes/admin_header.php');
 include('../../includes/doctor_sidebar.php');
 ?>
 
