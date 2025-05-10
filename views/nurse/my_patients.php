@@ -75,7 +75,17 @@ if (isset($_POST['update_patient'])) {
             padding: 5px 10px;
             margin-top: 5px;
         }
-    
+        .go-back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .go-back-btn:hover {
+            background-color: #e53935;
+        }
     </style>
 </head>
 <body>

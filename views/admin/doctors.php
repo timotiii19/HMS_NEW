@@ -45,7 +45,7 @@ if (isset($_GET['delete'])) {
 // Fetch doctors with user info
 $result = $conn->query("SELECT d.DoctorID, u.username AS DoctorName, u.email AS Email, d.Availability, d.ContactNumber, d.DoctorType, d.DepartmentID, d.DoctorFee 
                         FROM doctor d 
-                        JOIN users u ON d.UserID = u.id");
+                        JOIN users u ON d.UserID = u.UserID");
 ?>
 
 <!DOCTYPE html>

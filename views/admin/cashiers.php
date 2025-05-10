@@ -39,6 +39,44 @@ $result = $conn->query("SELECT * FROM cashier");
     <title>Cashier Management</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
+        .content {
+            padding: 20px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background-color: #f4f4f4;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -68,32 +106,36 @@ $result = $conn->query("SELECT * FROM cashier");
 <div class="content">
     <h2>Cashier Management</h2>
 
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Cashier Name</th>
-            <th>Action</th>
-        </tr>
-
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td><?= $row['CashierID'] ?></td>
-                    <td><?= htmlspecialchars($row['Name']) ?></td>
-                    <td>
-                        <button onclick="openModal(
-                            <?= $row['CashierID'] ?>,
-                            '<?= htmlspecialchars($row['Name'], ENT_QUOTES) ?>'
-                        )">Edit</button>
-                        |
-                        <a href="?delete=<?= $row['CashierID'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Cashier Name</th>
+                    <th>Action</th>
                 </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="3">No cashier records found.</td></tr>
-        <?php endif; ?>
-    </table>
+            </thead>
+            <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= $row['CashierID'] ?></td>
+                            <td><?= htmlspecialchars($row['Name']) ?></td>
+                            <td>
+                                <button class="btn" onclick="openModal(
+                                    <?= $row['CashierID'] ?>,
+                                    '<?= htmlspecialchars($row['Name'], ENT_QUOTES) ?>'
+                                )">Edit</button>
+                                <a href="?delete=<?= $row['CashierID'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr><td colspan="3">No cashier records found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -108,7 +150,7 @@ $result = $conn->query("SELECT * FROM cashier");
                 <label>Name</label>
                 <input type="text" name="name" id="modal_name" required>
             </div>
-            <button type="submit" name="update_cashier" class="save-btn">Save Changes</button>
+            <button type="submit" name="update_cashier" class="btn">Save Changes</button>
         </form>
     </div>
 </div>

@@ -24,13 +24,65 @@ $patients = getPatients($conn);
 <head>
     <meta charset="UTF-8">
     <title>View Patients</title>
-    <link rel="stylesheet" type="text/css" href="../../css/style.css"> <!-- Path to your CSS -->
+    <link rel="stylesheet" type="text/css" href="../../css/style.css">
+    <style>
+        .content {
+            padding: 20px;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f4;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            padding: 8px 16px;
+            text-decoration: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        .btn-primary {
+            background-color: #17a2b8;
+        }
+        .btn-primary:hover {
+            background-color: #117a8b;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+    </style>
 </head>
 <body>
 <div class="content">
     <h2>View Patients</h2>
 
-    <!-- Patients List -->
     <table>
         <thead>
             <tr>
@@ -47,14 +99,13 @@ $patients = getPatients($conn);
             <?php if (count($patients) > 0): ?>
                 <?php foreach ($patients as $patient): ?>
                     <tr>
-                        <td><?= $patient['PatientID'] ?></td>
-                        <td><?= $patient['Name'] ?></td>
-                        <td><?= $patient['DateOfBirth'] ?></td>
-                        <td><?= $patient['Contact'] ?></td>
-                        <td><?= $patient['Sex'] ?></td>
-                        <td><?= $patient['Address'] ?></td>
+                        <td><?= htmlspecialchars($patient['PatientID']) ?></td>
+                        <td><?= htmlspecialchars($patient['Name']) ?></td>
+                        <td><?= htmlspecialchars($patient['DateOfBirth']) ?></td>
+                        <td><?= htmlspecialchars($patient['Contact']) ?></td>
+                        <td><?= htmlspecialchars($patient['Sex']) ?></td>
+                        <td><?= htmlspecialchars($patient['Address']) ?></td>
                         <td>
-                            <!-- Since this is just a view, no links to edit or add patients -->
                             <a href="inpatients/create.php?patient_id=<?= $patient['PatientID'] ?>" class="btn btn-sm btn-primary">Inpatient</a>
                             <a href="outpatients/create.php?patient_id=<?= $patient['PatientID'] ?>" class="btn btn-sm btn-success">Outpatient</a>
                         </td>
@@ -65,10 +116,6 @@ $patients = getPatients($conn);
             <?php endif; ?>
         </tbody>
     </table>
-    
-    <br>
-    <!-- Back Button -->
-    <a href="index.php" class="btn">← Back to Dashboard</a>
 </div>
 
 </body>

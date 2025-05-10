@@ -16,17 +16,28 @@ include('../../config/db.php');
 $nurseID = $_SESSION['NurseID'];  // This should hold the logged-in nurse's ID
 
 // Fetch patients assigned to the current nurse (both inpatient and outpatient)
-$query = "SELECT * FROM patients 
-          LEFT JOIN outpatients ON patients.PatientID = outpatients.PatientID
+$query = "SELECT patients.*, 
+                 IF(inpatients.PatientID IS NOT NULL, 'Inpatient', 
+                    IF(outpatients.PatientID IS NOT NULL, 'Outpatient', 'Unknown')) AS PatientType
+          FROM patients
           LEFT JOIN inpatients ON patients.PatientID = inpatients.PatientID
+          LEFT JOIN outpatients ON patients.PatientID = outpatients.PatientID
           WHERE patients.AssignedNurseID = ? OR patients.AssignedNurseID IS NULL";
+
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $nurseID);  // Bind nurse ID as an integer
 $stmt->execute();
 $result = $stmt->get_result();
-$patients = $result->fetch_all(MYSQLI_ASSOC); // Get all results as an associative array
 
-// Fetch only patients assigned to the current nurse
+// Check if there are patients assigned to the nurse
+if ($result->num_rows > 0) {
+    $patients = $result->fetch_all(MYSQLI_ASSOC); // Fetch all results
+} else {
+    echo "No patients found for this nurse.";
+    exit();
+}
+
+// Fetch only patients assigned to the current nurse (for "My Patients" page)
 $query_my_patients = "SELECT * FROM patients 
                       WHERE AssignedNurseID = ?";
 $stmt_my_patients = $conn->prepare($query_my_patients);
@@ -94,7 +105,6 @@ if (isset($_POST['update_patient'])) {
             padding: 5px 10px;
             margin-top: 5px;
         }
-
     </style>
 </head>
 <body>
