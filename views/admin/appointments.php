@@ -4,10 +4,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'doctor') {
     header("Location: ../../auth/login.php");
     exit();
 }
-include('../../includes/admin_sidebar.php');
 
-// Connect database
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
+include('../../includes/admin_sidebar.php');
+include('../../config/db.php');
+
 
 // Handle Add Appointment
 if (isset($_POST['add_appointment'])) {

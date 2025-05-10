@@ -1,9 +1,15 @@
 <?php
 // Start session and include database config
+
 session_start();
-include('../../config/db_connect.php'); // Adjust path if needed
+if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
+    header("Location: ../../auth/login.php");
+    exit();
+}
 
 include('../../includes/admin_sidebar.php');
+include('../../config/db.php');
+
 // Handle Add
 if (isset($_POST['add'])) {
     $roomType = $_POST['RoomType'];

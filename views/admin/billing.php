@@ -5,9 +5,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 include('../../includes/admin_sidebar.php');
-
-// Database connection
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
+include('../../includes/db.php');
 
 // Check for connection errors
 if ($conn->connect_error) {

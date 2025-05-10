@@ -4,10 +4,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
     header("Location: ../../auth/login.php");
     exit();
 }
-include('../../includes/admin_sidebar.php');
 
-// Database connection
-$conn = new mysqli("localhost", "root", "root", "charles_hms");
+include('../../includes/admin_sidebar.php');
+include('../../config/db.php');
+
 ?>
 <!DOCTYPE html>
 <html>
