@@ -41,20 +41,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 mysqli_query($conn, $doctor_query);
             } elseif ($role == 'nurse') {
                 $nurse_query = "INSERT INTO nurse (Name, Email, Availability, ContactNumber, DepartmentID) 
-                                 VALUES ('$full_name', '$email', 'Available', '', NULL)";
+                                 VALUES ('$full_name', '$email', '', '', NULL)";
                 mysqli_query($conn, $nurse_query);
             } elseif ($role == 'pharmacist') {
-                $pharmacist_query = "INSERT INTO pharmacist (Name, ContactNumber) 
-                                     VALUES ('$full_name', '')";
-                mysqli_query($conn, $pharmacist_query);
+                $stmt = $conn->prepare("INSERT INTO pharmacist (Name, Email, ContactNumber) VALUES (?, ?, ?)");
+                $empty_contact = '';
+                $stmt->bind_param("sss", $full_name, $email, $empty_contact);
+                $stmt->execute();
             } elseif ($role == 'cashier') {
                 $cashier_query = "INSERT INTO cashier (Name) 
                                   VALUES ('$full_name')";
                 mysqli_query($conn, $cashier_query);
-            } elseif ($role == 'receptionist') {
-                $receptionist_query = "INSERT INTO receptionists (Name, DepartmentID) 
-                                       VALUES ('$full_name', NULL)";
-                mysqli_query($conn, $receptionist_query);
             }
 
             // Refresh the page to show the updated user list after adding a new user

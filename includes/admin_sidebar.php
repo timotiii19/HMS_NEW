@@ -39,9 +39,18 @@
 </script>
 
 <style>
+    body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    color: #333;
+    box-sizing: border-box;
+    }
     .sidebar {
+        position: fixed;
         width: 250px;
-        background-color: #2c3e50;
+        height: 100vh;
+        background-color: #9c335a;
         padding: 20px;
         color: white;
     }
@@ -68,6 +77,10 @@
         background-color: #34495e;
         border-radius: 4px;
     }
+    .content {
+    margin-left: 220px; /* leave space for sidebar /
+    padding: 20px;
+    }
     .dropdown-content {
         display: none;
         list-style-type: none;
@@ -77,7 +90,7 @@
         padding: 6px 8px;
         font-size: 0.85em !important;
         opacity: 0.85;
-        margin-left: 20px;  /* ← more indentation to push it right */
+        margin-left: 20px;  / ← more indentation to push it right */
     }
     .dropdown-btn::after {
         content: " ▼";

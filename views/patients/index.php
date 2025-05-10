@@ -3,10 +3,11 @@ session_start();
 include('../../config/db.php');
 
 // Redirect if user is not an admin
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'doctor') {
+if (!isset($_SESSION['username']) || ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'doctor')) {
     header("Location: ../../auth/login.php");
     exit();
 }
+
 
 include('../../includes/doctor_sidebar.php');
 

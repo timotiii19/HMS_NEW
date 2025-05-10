@@ -8,19 +8,21 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'admin') {
 include('../../includes/admin_sidebar.php');
 include('../../config/db.php');
 
-// Add pharmacist
-if (isset($_POST['add_pharmacist'])) {
-    $name = $_POST['pharmacist_name'];
-    $contact = $_POST['pharmacist_contact'];
+// Handle update
+if (isset($_POST['update_pharmacist'])) {
+    $pharmacist_id = $_POST['pharmacist_id'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $contact = $_POST['contact'];
 
-    $stmt = $conn->prepare("INSERT INTO pharmacist (Name, ContactNumber) VALUES (?, ?)");
-    $stmt->bind_param("ss", $name, $contact);
+    $stmt = $conn->prepare("UPDATE pharmacist SET Name=?, Email=?, ContactNumber=? WHERE PharmacistID=?");
+    $stmt->bind_param("sssi", $name, $email, $contact, $pharmacist_id);
     $stmt->execute();
     header("Location: pharmacists.php");
     exit();
 }
 
-// Delete pharmacist
+// Handle delete
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $conn->query("DELETE FROM pharmacist WHERE PharmacistID = $id");
@@ -28,47 +30,117 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// Display pharmacists
+// Fetch pharmacists
 $result = $conn->query("SELECT * FROM pharmacist");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Pharmacist Management</title>
-    <link rel="stylesheet" type="text/css" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px; right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
 
 <div class="content">
     <h2>Pharmacist Management</h2>
 
-    <!-- Pharmacist Form -->
-    <form method="post" action="">
-        <input type="text" name="pharmacist_name" placeholder="Enter Pharmacist Name" required>
-        <input type="text" name="pharmacist_contact" placeholder="Enter Contact Number" required>
-        <button type="submit" name="add_pharmacist">Add Pharmacist</button>
-    </form>
-
-    <!-- Pharmacist Table -->
     <table border="1">
         <tr>
             <th>ID</th>
             <th>Pharmacist Name</th>
+            <th>Email</th>
             <th>Contact Number</th>
             <th>Action</th>
         </tr>
 
-        <?php while ($row = $result->fetch_assoc()) { ?>
-        <tr>
-            <td><?php echo $row['PharmacistID']; ?></td>
-            <td><?php echo $row['Name']; ?></td>
-            <td><?php echo $row['ContactNumber']; ?></td>
-            <td><a href="?delete=<?php echo $row['PharmacistID']; ?>" onclick="return confirm('Delete this pharmacist?')">Delete</a></td>
-        </tr>
-        <?php } ?>
+        <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?= $row['PharmacistID'] ?></td>
+                    <td><?= htmlspecialchars($row['Name']) ?></td>
+                    <td><?= htmlspecialchars($row['Email']) ?></td>
+                    <td><?= htmlspecialchars($row['ContactNumber']) ?></td>
+                    <td>
+                        <button onclick="openModal(
+                            <?= $row['PharmacistID'] ?>, 
+                            '<?= htmlspecialchars($row['Name'], ENT_QUOTES) ?>',
+                            '<?= htmlspecialchars($row['Email'], ENT_QUOTES) ?>',
+                            '<?= htmlspecialchars($row['ContactNumber'], ENT_QUOTES) ?>'
+                        )">Edit</button>
+                        |
+                        <a href="?delete=<?= $row['PharmacistID'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="5">No pharmacist records found.</td></tr>
+        <?php endif; ?>
     </table>
-
 </div>
+
+<!-- Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <h3>Edit Pharmacist Details</h3>
+        <form method="post" action="pharmacists.php">
+            <input type="hidden" name="pharmacist_id" id="modal_pharmacist_id">
+
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" id="modal_name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" id="modal_email" required>
+            </div>
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input type="text" name="contact" id="modal_contact" required>
+            </div>
+            <button type="submit" name="update_pharmacist" class="save-btn">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id, name, email, contact) {
+    document.getElementById('modal_pharmacist_id').value = id;
+    document.getElementById('modal_name').value = name;
+    document.getElementById('modal_email').value = email;
+    document.getElementById('modal_contact').value = contact;
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+</script>
 
 </body>
 </html>
