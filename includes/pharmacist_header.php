@@ -1,3 +1,13 @@
+<?php
+
+if (isset($_SESSION['PharmacistID'])) {
+    $pharmacistID = $_SESSION['PharmacistID'];
+} else {
+    $pharmacistID = "Unknown"; 
+}
+
+?>
+
 <style>
   .header {
     position: fixed;
@@ -104,13 +114,10 @@
 
 </style>
 
-
 <div class="header">
     <div class="left-section">
         <img src="../../images/hosplogo.png" alt="Logo" class="logo">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="dropdown">
-        </div>
     </div>
 
     <div class="search-section">
@@ -121,7 +128,7 @@
     <div class="right-section">
         <img src="../../assets/user.png" alt="Avatar" class="avatar">
         <div class="user-dropdown">
-            <span>System Administrator <i class="fas fa-chevron-down"></i></span>
+            <span>Pharmacist ID: <?php echo $pharmacistID; ?> <i class="fas fa-chevron-down"></i></span>
         </div>
     </div>
 </div>

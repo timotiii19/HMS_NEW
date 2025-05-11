@@ -81,7 +81,7 @@
 }
 
 .sidebar ul li a:hover {
-    background-color: #34495e;
+    background-color: #7a0154;
     border-radius: 4px;
 }
 
@@ -94,13 +94,18 @@
     display: none;
     list-style-type: none;
     padding-left: 10px;
+    background-color:#923f78;
 }
 
 .dropdown-content li a {
     padding: 6px 8px;
     font-size: 0.85em !important;
     opacity: 0.85;
-    margin-left: 20px;
+    margin-left: 0px;
+}
+
+.sidebar .dropdown-content li a {
+  padding-left: 30px !important;
 }
 
 .dropdown-btn::after {

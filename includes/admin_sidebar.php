@@ -9,7 +9,7 @@
             <a href="javascript:void(0);" class="dropdown-btn">Employees</a>
             <ul class="dropdown-content">
                 <li><a href="/HMS-main/views/admin/employees.php">Employees Management</a></li> 
-                <li><a href=>---------------------</a></li>
+                <li style="text-align: center;">⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯</li>
                 <li><a href="/HMS-main/views/admin/doctors.php">Doctors Management</a></li>
                 <li><a href="/HMS-main/views/admin/nurses.php">Nurses Management</a></li>
                 <li><a href="/HMS-main/views/admin/pharmacists.php">Pharmacists Management</a></li>
@@ -87,7 +87,7 @@
 }
 
 .sidebar ul li a:hover {
-    background-color: #34495e;
+    background-color: #7a0154;
     border-radius: 4px;
 }
 
@@ -100,13 +100,18 @@
     display: none;
     list-style-type: none;
     padding-left: 10px;
+    background-color:#923f78;
 }
 
 .dropdown-content li a {
     padding: 6px 8px;
     font-size: 0.85em !important;
     opacity: 0.85;
-    margin-left: 20px;
+    margin-left: 0px;
+}
+
+.sidebar .dropdown-content li a {
+  padding-left: 30px !important;
 }
 
 .dropdown-btn::after {

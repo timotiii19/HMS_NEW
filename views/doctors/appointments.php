@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include('../../includes/admin_header.php');
+include('../../includes/doctor_header.php');
 include('../../includes/doctor_sidebar.php');
 include('../../config/db.php');
 
@@ -17,7 +17,7 @@ if (isset($_POST['add_appointment'])) {
     $stmt = $conn->prepare("INSERT INTO appointments (PatientID, DoctorID, AppointmentDate, AppointmentTime, Reason) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("iisss", $patient_id, $doctor_id, $appointment_date, $appointment_time, $reason);
     $stmt->execute();
-    header("Location: index.php");
+    header("Location: appointments.php");
     exit();
 }
 
@@ -33,7 +33,7 @@ if (isset($_POST['edit_appointment'])) {
     $stmt = $conn->prepare("UPDATE appointments SET PatientID = ?, AppointmentDate = ?, AppointmentTime = ?, Reason = ? WHERE AppointmentID = ?");
     $stmt->bind_param("isssi", $patient_id, $appointment_date, $appointment_time, $reason, $appointment_id);
     $stmt->execute();
-    header("Location: index.php");
+    header("Location: appointments.php");
     exit();
 }
 
@@ -45,6 +45,7 @@ $appointments = $stmt->get_result();
 
 // Fetch patients for the dropdown list
 $patients = $conn->query("SELECT PatientID, Name FROM patients");
+
 ?>
 
 <!DOCTYPE html>

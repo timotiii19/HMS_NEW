@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-include('../../includes/admin_header.php');
+include('../../includes/doctor_header.php');
 include('../../includes/doctor_sidebar.php');
 include('../../config/db.php');
+
 
 // Check connection
 if ($conn->connect_error) {

@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-include('../../includes/admin_header.php');
+include('../../includes/doctor_header.php');
 include('../../includes/doctor_sidebar.php');
 include('../../config/db.php');
+
 
 // Fetch procedures from database
 $query = "SELECT * FROM labprocedure";  // Adjust the table name if necessary
